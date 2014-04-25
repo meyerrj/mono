@@ -597,15 +597,66 @@ namespace System.Web
 		public static string GetMimeType (string fileName)
 		{
 			string result = null;
-			int dot = fileName.LastIndexOf ('.');
+			int dot = fileName.LastIndexOf('.');
 
 			if (dot != -1 && fileName.Length > dot + 1)
-				mimeTypes.TryGetValue (fileName.Substring (dot + 1), out result);
-			
+			{
+				mimeTypes.TryGetValue(fileName.Substring (dot + 1).ToLower(), out result);
+			}
 			if (result == null)
+			{
 				result = "application/octet-stream";
-
+			}
 			return result;
 		}
+		
+		protected internal static void SetMimeType(string fileExtension, string mimeType)
+		{
+			
+			if (!string.IsNullOrWhiteSpace(fileExtension) && !string.IsNullOrWhiteSpace(mimeType))
+			{
+				int dot = fileExtension.LastIndexOf('.');
+				string ext = fileExtension.ToLower();
+				if (dot != -1)
+				{
+					ext = fileExtension.Substring(dot + 1).ToLower();	
+				}
+				
+				if (mimeTypes.ContainsKey(ext))
+				{
+					mimeTypes.Remove(ext);
+					mimeTypes.Add(ext, mimeType);
+				}
+				else
+				{
+					mimeTypes.Add(ext, mimeType);
+				}
+			}
+			
+		}
+		
+		protected internal static void RemoveMimeType(string fileExtension)
+		{
+			if (!string.IsNullOrWhiteSpace(fileExtension))
+			{
+				int dot = fileExtension.LastIndexOf('.');
+				string ext = fileExtension.ToLower();
+				if (dot != -1)
+				{
+					ext = fileExtension.Substring(dot + 1).ToLower();	
+				}
+				if (mimeTypes.ContainsKey(ext))
+				{
+					mimeTypes.Remove(ext);
+				}
+			}
+		}
+		
+		protected internal static void ClearMimeTypes()
+		{
+			mimeTypes.Clear();
+		}
+		
+		
 	}
 }
